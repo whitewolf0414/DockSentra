@@ -1,0 +1,39 @@
+# ── Dockerfile.good ──────────────────────────────────────────────────────────
+# This Dockerfile follows all 5 security rules and should score 100/100.
+#
+#   ✓ no_root_user          — non-root appuser is created and set via USER
+#   ✓ unpinned_base_image   — pinned to a specific version (not :latest)
+#   ✓ hardcoded_secret      — no secrets in ENV or ARG
+#   ✓ missing_healthcheck   — HEALTHCHECK instruction is present
+#   ✓ add_instead_of_copy   — uses COPY, never ADD
+# ─────────────────────────────────────────────────────────────────────────────
+
+FROM python:3.11.9-slim
+
+# Metadata
+LABEL maintainer="security-checker@example.com"
+LABEL version="1.0.0"
+
+WORKDIR /app
+
+# Install dependencies as root before dropping privileges
+COPY requirements.txt /app/requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy application source
+COPY . /app
+
+# Create a dedicated non-root user and group
+RUN groupadd -r appgroup && useradd -r -g appgroup appuser
+
+# Drop to non-root user — satisfies no_root_user rule
+USER appuser
+
+# Expose the web port
+EXPOSE 5000
+
+# Health check — satisfies missing_healthcheck rule
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+  CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:5000/health')" || exit 1
+
+CMD ["python", "-m", "app.web.app"]

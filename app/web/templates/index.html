@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Dockerfile Security Checker — scan your Dockerfiles for common security misconfigurations and get a 0-100 security score instantly." />
+  <title>Dockerfile Security Checker</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+<body>
+  <!-- ── Header ─────────────────────────────────────────────────────────── -->
+  <header class="site-header">
+    <div class="container">
+      <div class="logo">
+        <svg class="logo-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M12 2L3 7v5c0 5.25 3.75 10.15 9 11.25C17.25 22.15 21 17.25 21 12V7L12 2z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span>Dockerfile Security Checker</span>
+      </div>
+      <nav class="header-links">
+        <a href="https://github.com" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <a href="#rules-reference">Rules</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ── Hero ───────────────────────────────────────────────────────────── -->
+  <section class="hero">
+    <div class="container">
+      <div class="hero-badge">🔒 Security-First DevOps</div>
+      <h1 class="hero-title">Scan your Dockerfile<br /><span class="gradient-text">before it reaches production</span></h1>
+      <p class="hero-subtitle">
+        Paste your Dockerfile below and get an instant security score, severity-rated findings,
+        and actionable recommendations — powered by a configurable rules engine.
+      </p>
+    </div>
+  </section>
+
+  <!-- ── Main ───────────────────────────────────────────────────────────── -->
+  <main class="container main-grid">
+
+    <!-- ── Scanner Form ─────────────────────────────────────────────────── -->
+    <section class="card scanner-card" aria-label="Dockerfile Scanner">
+      <div class="card-header">
+        <h2>Paste Dockerfile</h2>
+        <span class="badge badge-info">Stateless · No data stored</span>
+      </div>
+
+      <form method="POST" action="/" id="scanner-form">
+        <div class="editor-wrapper">
+          <div class="editor-toolbar">
+            <span class="dot red"></span>
+            <span class="dot yellow"></span>
+            <span class="dot green"></span>
+            <span class="editor-label">Dockerfile</span>
+          </div>
+          <textarea
+            id="dockerfile_content"
+            name="dockerfile_content"
+            class="code-editor"
+            rows="22"
+            placeholder="# Paste your Dockerfile here&#10;FROM python:3.11-slim&#10;WORKDIR /app&#10;..."
+            spellcheck="false"
+            aria-label="Dockerfile content"
+          >{{ dockerfile_content }}</textarea>
+        </div>
+
+        {% if error %}
+        <div class="alert alert-error" role="alert">
+          <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
+          {{ error }}
+        </div>
+        {% endif %}
+
+        <button type="submit" class="btn-scan" id="scan-btn">
+          <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M10 1a4.5 4.5 0 00-4.5 4.5V9H5a2 2 0 00-2 2v6a2 2 0 002 2h10a2 2 0 002-2v-6a2 2 0 00-2-2h-.5V5.5A4.5 4.5 0 0010 1zm3 8V5.5a3 3 0 10-6 0V9h6z" clip-rule="evenodd"/></svg>
+          Run Security Scan
+        </button>
+      </form>
+    </section>
+
+    <!-- ── Results Panel ────────────────────────────────────────────────── -->
+    {% if report %}
+    <section class="card results-card" id="results" aria-label="Scan Results">
+      <div class="card-header">
+        <h2>Scan Results</h2>
+        <span class="badge badge-muted">{{ report.meta.generated_at[:10] }}</span>
+      </div>
+
+      <!-- Score gauge -->
+      {% set score = report.score.value %}
+      {% set grade = report.score.grade %}
+      {% set grade_class = {'A': 'grade-a', 'B': 'grade-b', 'C': 'grade-c', 'D': 'grade-d', 'F': 'grade-f'}[grade] %}
+
+      <div class="score-panel">
+        <div class="score-gauge">
+          <svg class="gauge-svg" viewBox="0 0 120 120" aria-hidden="true">
+            <circle class="gauge-track" cx="60" cy="60" r="50" />
+            <circle class="gauge-fill {{ grade_class }}"
+              cx="60" cy="60" r="50"
+              stroke-dasharray="{{ (score / 100 * 314.16) | round(2) }} 314.16"
+              stroke-dashoffset="78.54"
+            />
+          </svg>
+          <div class="gauge-label">
+            <span class="gauge-score {{ grade_class }}">{{ score }}</span>
+            <span class="gauge-unit">/ 100</span>
+          </div>
+        </div>
+
+        <div class="score-meta">
+          <div class="score-stat">
+            <span class="stat-label">Grade</span>
+            <span class="stat-value grade-badge {{ grade_class }}">{{ grade }}</span>
+          </div>
+          <div class="score-stat">
+            <span class="stat-label">Critical Failures</span>
+            <span class="stat-value {% if report.score.critical_failures > 0 %}text-danger{% else %}text-success{% endif %}">
+              {{ report.score.critical_failures }}
+            </span>
+          </div>
+          <div class="score-stat">
+            <span class="stat-label">Total Checks</span>
+            <span class="stat-value">{{ report.findings | length }}</span>
+          </div>
+          <div class="score-stat">
+            <span class="stat-label">Passed</span>
+            <span class="stat-value text-success">
+              {{ report.findings | selectattr('status', 'equalto', 'PASS') | list | length }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Findings table -->
+      <div class="findings-section">
+        <h3 class="findings-title">Findings</h3>
+        <div class="findings-table-wrapper">
+          <table class="findings-table" role="grid">
+            <thead>
+              <tr>
+                <th scope="col">Rule</th>
+                <th scope="col">Severity</th>
+                <th scope="col">Status</th>
+                <th scope="col">Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for finding in report.findings %}
+              <tr class="finding-row {% if finding.status == 'FAIL' %}finding-fail{% else %}finding-pass{% endif %}">
+                <td class="finding-id"><code>{{ finding.id }}</code></td>
+                <td>
+                  <span class="severity-badge sev-{{ finding.severity }}">
+                    {{ finding.severity | upper }}
+                  </span>
+                </td>
+                <td>
+                  <span class="status-badge {% if finding.status == 'FAIL' %}status-fail{% else %}status-pass{% endif %}">
+                    {% if finding.status == 'FAIL' %}✗{% else %}✓{% endif %} {{ finding.status }}
+                  </span>
+                </td>
+                <td class="finding-desc">{{ finding.description }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+    {% else %}
+    <!-- Empty state -->
+    <section class="card empty-state-card" aria-label="Awaiting scan">
+      <div class="empty-state">
+        <div class="empty-icon">🔍</div>
+        <h3>Ready to scan</h3>
+        <p>Paste a Dockerfile on the left and click <strong>Run Security Scan</strong> to see your security score and findings here.</p>
+      </div>
+    </section>
+    {% endif %}
+  </main>
+
+  <!-- ── Rules Reference ──────────────────────────────────────────────── -->
+  <section class="rules-section container" id="rules-reference">
+    <h2>Built-in Rules</h2>
+    <p class="rules-intro">All rules are configurable in <code>config/rules.yaml</code>. Add or modify rules without touching Python code.</p>
+    <div class="rules-grid">
+      <div class="rule-card">
+        <div class="rule-header"><span class="sev-badge sev-critical">CRITICAL</span></div>
+        <h4>no_root_user</h4>
+        <p>Container runs as root. A non-root USER instruction is required to limit container-escape blast radius.</p>
+      </div>
+      <div class="rule-card">
+        <div class="rule-header"><span class="sev-badge sev-critical">CRITICAL</span></div>
+        <h4>hardcoded_secret</h4>
+        <p>Detects passwords, API keys, secrets, or tokens hard-coded in ENV or ARG instructions.</p>
+      </div>
+      <div class="rule-card">
+        <div class="rule-header"><span class="sev-badge sev-high">HIGH</span></div>
+        <h4>unpinned_base_image</h4>
+        <p>Base image uses <code>:latest</code>. Pin to a specific version for reproducible, auditable builds.</p>
+      </div>
+      <div class="rule-card">
+        <div class="rule-header"><span class="sev-badge sev-medium">MEDIUM</span></div>
+        <h4>missing_healthcheck</h4>
+        <p>No HEALTHCHECK instruction found. Required for orchestrators to detect and restart unhealthy containers.</p>
+      </div>
+      <div class="rule-card">
+        <div class="rule-header"><span class="sev-badge sev-low">LOW</span></div>
+        <h4>add_instead_of_copy</h4>
+        <p>ADD is used instead of COPY. COPY is safer — ADD has implicit URL fetching and tar extraction behaviours.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Footer ───────────────────────────────────────────────────────── -->
+  <footer class="site-footer">
+    <div class="container">
+      <p>Dockerfile Security Checker · Built as a portfolio DevSecOps project · Rules driven by <code>config/rules.yaml</code></p>
+    </div>
+  </footer>
+
+  <script>
+    // Animate score gauge on load
+    document.addEventListener('DOMContentLoaded', () => {
+      const fill = document.querySelector('.gauge-fill');
+      if (fill) {
+        fill.style.transition = 'stroke-dasharray 1.2s cubic-bezier(0.4, 0, 0.2, 1)';
+      }
+      // Scan button loading state
+      const form = document.getElementById('scanner-form');
+      const btn = document.getElementById('scan-btn');
+      if (form && btn) {
+        form.addEventListener('submit', () => {
+          btn.textContent = 'Scanning…';
+          btn.disabled = true;
+        });
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,47 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+*.pyd
+*.so
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Pytest / coverage
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+
+# Build artefacts
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Reports (generated at runtime — keep .gitkeep)
+reports/*.json
+reports/*.html
+reports/*.txt
+reports/*.xml
+
+# IDE / editor
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Secrets (never commit)
+.env
+*.env
+secrets/
+
+# Docker
+.dockerignore

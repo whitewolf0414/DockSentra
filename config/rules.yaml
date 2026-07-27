@@ -1,0 +1,71 @@
+## Dockerfile Security Rules
+## ─────────────────────────────────────────────────────────────────
+## Each rule must have:
+##   id          – unique snake_case identifier
+##   description – human-readable explanation shown in the report
+##   severity    – one of: critical | high | medium | low
+##   check_type  – one of: missing_instruction | tag_equals |
+##                          pattern_match | instruction_used
+##
+## Additional fields per check_type:
+##   missing_instruction:
+##     instruction  – Dockerfile keyword that must appear at least once
+##
+##   tag_equals:
+##     instruction  – Dockerfile keyword to inspect
+##     tag          – exact tag value that triggers a FAIL (e.g. "latest")
+##
+##   pattern_match:
+##     instructions – list of Dockerfile keywords to inspect
+##     pattern      – Python regex applied to the args of each instruction
+##
+##   instruction_used:
+##     instruction  – Dockerfile keyword whose mere presence triggers a FAIL
+## ─────────────────────────────────────────────────────────────────
+
+rules:
+  - id: no_root_user
+    description: >
+      Container runs as root. Add a USER instruction with a non-root
+      user to limit the blast radius of a container escape.
+    severity: critical
+    check_type: missing_instruction
+    instruction: USER
+
+  - id: unpinned_base_image
+    description: >
+      Base image uses the ':latest' tag. Pin to a specific version
+      (e.g. python:3.11.9-slim) to ensure reproducible, auditable builds.
+    severity: high
+    check_type: tag_equals
+    instruction: FROM
+    tag: latest
+
+  - id: hardcoded_secret
+    description: >
+      A potential secret (password, API key, or token) appears to be
+      hard-coded in an ENV or ARG instruction. Use Docker build secrets
+      or a secrets manager instead.
+    severity: critical
+    check_type: pattern_match
+    instructions:
+      - ENV
+      - ARG
+    pattern: "(?i)(password|secret|api_key|token)"
+
+  - id: missing_healthcheck
+    description: >
+      No HEALTHCHECK instruction found. Add one so the Docker daemon
+      and orchestrators (e.g. Kubernetes) can detect unhealthy containers.
+    severity: medium
+    check_type: missing_instruction
+    instruction: HEALTHCHECK
+
+  - id: add_instead_of_copy
+    description: >
+      ADD is used instead of COPY. COPY is preferred because ADD has
+      implicit behaviours (URL fetching, tar extraction) that can
+      introduce unintended files or remote code.
+    severity: low
+    check_type: instruction_used
+    instruction: ADD

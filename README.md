@@ -273,6 +273,7 @@ All dependency security remediations are recorded here.
 | 2026-07-28 | `Werkzeug` | 3.0.6 | 3.1.6 | PYSEC-2026-2046, PYSEC-2026-2044, PYSEC-2026-2320 | Three chained `safe_join` flaws allowing Windows device names (CON, AUX, NUL etc.) as path segments, causing indefinite read hangs in `send_from_directory`. Required incremental fixes through 3.1.4 → 3.1.5 → 3.1.6. |
 | 2026-07-28 | `Flask` | 3.0.3 | 3.1.3 | PYSEC-2026-2151 | Missing `Vary: Cookie` header on some session access patterns. Could cause caching proxies to serve session-sensitive responses to wrong users. |
 | 2026-07-28 | `pytest` | 8.2.2 | 9.0.3 | PYSEC-2026-1845 | `/tmp/pytest-of-{user}` directory race condition on UNIX — local privilege escalation. Dev-only tool; not included in production image. |
+| 2026-07-28 | `pytest-cov` | 5.0.0 | 7.1.0 | N/A (compatibility) | Ensures plugin compatibility with pytest 9.x; no CVE associated. |
 
 > **Rotation note:** No real credentials were ever committed to this repository. All CVE remediations are pure dependency version bumps — no secret rotation is required.
 

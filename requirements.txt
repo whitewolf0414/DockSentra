@@ -6,4 +6,4 @@ Werkzeug==3.1.6    # bumped from 3.0.6 — PYSEC-2026-2046/2044/2320 (safe_join 
 
 # Testing (dev-only, not included in production Docker image)
 pytest==9.0.3      # bumped from 8.2.2 — PYSEC-2026-1845 (/tmp privilege escalation on UNIX)
-pytest-cov==5.0.0
+pytest-cov==7.1.0

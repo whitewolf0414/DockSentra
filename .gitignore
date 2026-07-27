@@ -43,8 +43,15 @@ Thumbs.db
 *.env
 secrets/
 
-# Docker
-.dockerignore
+# Security scanner outputs
+gitleaks-report.json
+gitleaks.zip
+gitleaks_bin/
+*.zip
+
+# Reports
+*-report.json
+reports/
 
 # Certificates and keys
 *.pem

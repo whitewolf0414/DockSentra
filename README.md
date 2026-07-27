@@ -2,6 +2,8 @@
 
 > **Catch Dockerfile security issues before they reach production.**
 
+**Intern ID:** CITS6600
+
 A CLI + web tool that statically analyses Dockerfiles for common security misconfigurations and produces a 0–100 security score with severity-rated findings. Rules are entirely data-driven — add or modify checks in `config/rules.yaml` without touching Python code.
 
 Built as a portfolio-grade DevSecOps project demonstrating: static analysis, data-driven rule engines, Flask web applications, pytest test suites, containerisation best practices, and a Jenkins CI/CD pipeline with automated security gating.

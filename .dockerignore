@@ -1,0 +1,41 @@
+# Exclude development / non-runtime files from the Docker image
+
+# Python cache
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Tests (not needed in the production image)
+tests/
+
+# Development & CI files
+.git/
+.gitignore
+.dockerignore
+Jenkinsfile
+*.md
+
+# Reports
+reports/*.json
+reports/*.html
+reports/*.xml
+reports/*.txt
+
+# IDE / editor
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# Secrets / env files
+.env
+*.env
+secrets/

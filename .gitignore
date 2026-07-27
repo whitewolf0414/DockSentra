@@ -45,3 +45,11 @@ secrets/
 
 # Docker
 .dockerignore
+
+# Certificates and keys
+*.pem
+*.key
+*.p12
+*.pfx
+credentials.json
+service-account.json

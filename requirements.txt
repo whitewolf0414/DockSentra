@@ -1,9 +1,9 @@
 # Runtime dependencies
-Flask==3.0.3
+Flask==3.1.3       # bumped from 3.0.3 — PYSEC-2026-2151 (Vary: Cookie cache poisoning)
 PyYAML==6.0.2
 rich==13.7.1
-Werkzeug==3.0.4
+Werkzeug==3.1.6    # bumped from 3.0.6 — PYSEC-2026-2046/2044/2320 (safe_join Windows device name DoS)
 
-# Testing
-pytest==8.2.2
+# Testing (dev-only, not included in production Docker image)
+pytest==9.0.3      # bumped from 8.2.2 — PYSEC-2026-1845 (/tmp privilege escalation on UNIX)
 pytest-cov==5.0.0

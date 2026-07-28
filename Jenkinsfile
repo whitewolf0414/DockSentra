@@ -45,11 +45,18 @@ pipeline {
         stage('Build') {
             steps {
                 sh '''
-                    python -m venv .venv
-                    . .venv/bin/activate
-                    pip install --upgrade pip --quiet
-                    pip install -r requirements.txt --quiet
-                    echo "✔ Dependencies installed"
+                bash <<'EOF'
+                   set -e
+                   set -o pipefail
+
+                   python3 -m venv .venv
+                   . .venv/bin/activate
+
+                   python3 -m pip install --upgrade pip --quiet
+                   python3 -m pip install -r requirements.txt --quiet
+
+                   echo "✔ Dependencies installed"
+EOF
                 '''
             }
         }
@@ -58,13 +65,17 @@ pipeline {
         stage('Test') {
             steps {
                 sh '''
+                bash <<'EOF'
+                    set -e
+                    set -o pipefail
                     . .venv/bin/activate
                     mkdir -p reports
-                    pytest tests/ \
+                    python3 -m pytest tests/ \
                         -v \
                         --tb=short \
                         --junitxml=reports/pytest-results.xml \
                         2>&1 | tee reports/pytest-output.txt
+EOF
                 '''
             }
             post {
@@ -81,13 +92,16 @@ pipeline {
         stage('Security Scan') {
             steps {
                 sh '''
+                bash <<'EOF'
+                    set -e
+                    set -o pipefail
                     . .venv/bin/activate
                     mkdir -p reports
 
                     echo "──────────────────────────────────────────"
                     echo " Scanning Dockerfile.bad (expect FAIL)"
                     echo "──────────────────────────────────────────"
-                    python -m app.cli.cli \
+                    python3 -m app.cli.cli \
                         --file app/sample/Dockerfile.bad \
                         --json \
                         --fail-under ${FAIL_UNDER} \
@@ -98,7 +112,7 @@ pipeline {
                     echo "──────────────────────────────────────────"
                     echo " Scanning project root Dockerfile (dogfood)"
                     echo "──────────────────────────────────────────"
-                    python -m app.cli.cli \
+                    python3 -m app.cli.cli \
                         --file Dockerfile \
                         --json \
                         --fail-under ${FAIL_UNDER} \
@@ -107,6 +121,7 @@ pipeline {
                     # failed the security check — this WILL fail the build.
 
                     echo "✔ Security scan complete"
+EOF
                 '''
             }
         }
@@ -115,6 +130,9 @@ pipeline {
         stage('Container Scan') {
             steps {
                 sh '''
+                bash <<'EOF'
+                    set -e
+                    set -o pipefail
                     docker build -t ${IMAGE_NAME}:${IMAGE_TAG} .
 
                     echo "──────────────────────────────────────────"
@@ -135,6 +153,7 @@ pipeline {
                         ${IMAGE_NAME}:${IMAGE_TAG}
 
                     echo "✔ Trivy scan passed (no CRITICAL/HIGH CVEs)"
+EOF
                 '''
             }
         }

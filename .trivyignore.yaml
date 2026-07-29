@@ -1,0 +1,138 @@
+# .trivyignore.yaml
+#
+# Documents CRITICAL/HIGH CVEs that have NO available upstream fix as of the
+# date below. These come from base OS packages (Debian 12) and are not
+# introduced by DockSentra's own code.
+#
+# Source: Jenkins build #5 (dockerfile-security-checker:5), scanned 2026-07-29
+# All fixable CVEs were already resolved via Dockerfile changes:
+#   - apt-get upgrade -y
+#   - pip install --upgrade pip setuptools wheel
+# Everything listed below remains after those fixes were applied.
+#
+# IMPORTANT: expired_at is set ~30 days out. When an entry expires, Trivy
+# will start flagging it again automatically — treat that as a prompt to
+# re-scan and check whether upstream has shipped a fix yet. If still
+# unfixed, renew the expiry date. If fixed, delete the entry (Trivy will
+# no longer find it anyway once the package is patched).
+#
+# Do not add new entries here without checking the Trivy "Status" field
+# first (only affected / fix_deferred / will_not_fix belong here — never
+# an entry whose Status is "fixed").
+
+vulnerabilities:
+  - id: CVE-2023-2953
+    statement: "openldap - no fix available upstream as of 2026-07-29"
+    expired_at: 2026-08-28
+
+  - id: CVE-2023-45853
+    statement: "zlib1g - Debian status will_not_fix as of 2026-07-29"
+    expired_at: 2026-08-28
+
+  - id: CVE-2025-59375
+    statement: "libexpat1 - Debian status will_not_fix as of 2026-07-29"
+    expired_at: 2026-08-28
+
+  - id: CVE-2025-69720
+    statement: "ncurses - no fix available upstream as of 2026-07-29"
+    expired_at: 2026-08-28
+
+  - id: CVE-2025-7458
+    statement: "libsqlite3-0 - no fix available upstream as of 2026-07-29"
+    expired_at: 2026-08-28
+
+  - id: CVE-2026-12064
+    statement: "curl/libcurl - Debian status fix_deferred as of 2026-07-29"
+    expired_at: 2026-08-28
+
+  - id: CVE-2026-13221
+    statement: "perl-base - Debian status affected as of 2026-07-29"
+    expired_at: 2026-08-28
+
+  - id: CVE-2026-25210
+    statement: "libexpat1 - Debian status affected as of 2026-07-29"
+    expired_at: 2026-08-28
+
+  - id: CVE-2026-41992
+    statement: "gzip - no fix available upstream as of 2026-07-29"
+    expired_at: 2026-08-28
+
+  - id: CVE-2026-42496
+    statement: "perl-archive-tar - Debian status fix_deferred as of 2026-07-29"
+    expired_at: 2026-08-28
+
+  - id: CVE-2026-42497
+    statement: "perl-Archive-Tar - Debian status fix_deferred as of 2026-07-29"
+    expired_at: 2026-08-28
+
+  - id: CVE-2026-45186
+    statement: "libexpat1 - no fix available upstream as of 2026-07-29"
+    expired_at: 2026-08-28
+
+  - id: CVE-2026-48962
+    statement: "perl-IO-Compress - Debian status affected as of 2026-07-29"
+    expired_at: 2026-08-28
+
+  - id: CVE-2026-53615
+    statement: "util-linux family (bsdutils, libblkid1, libmount1, libsmartcols1, libuuid1) - Debian status affected as of 2026-07-29"
+    expired_at: 2026-08-28
+
+  - id: CVE-2026-54369
+    statement: "libacl1 - no fix available upstream as of 2026-07-29"
+    expired_at: 2026-08-28
+
+  - id: CVE-2026-55199
+    statement: "libssh2-1 - no fix available upstream as of 2026-07-29"
+    expired_at: 2026-08-28
+
+  - id: CVE-2026-55200
+    statement: "libssh2-1 - no fix available upstream as of 2026-07-29"
+    expired_at: 2026-08-28
+
+  - id: CVE-2026-56131
+    statement: "libexpat1 - no fix available upstream as of 2026-07-29"
+    expired_at: 2026-08-28
+
+  - id: CVE-2026-56407
+    statement: "libexpat1 - no fix available upstream as of 2026-07-29"
+    expired_at: 2026-08-28
+
+  - id: CVE-2026-56408
+    statement: "libexpat1 - no fix available upstream as of 2026-07-29"
+    expired_at: 2026-08-28
+
+  - id: CVE-2026-57432
+    statement: "perl - no fix available upstream as of 2026-07-29"
+    expired_at: 2026-08-28
+
+  - id: CVE-2026-57433
+    statement: "perl-base (Storable) - Debian status affected as of 2026-07-29"
+    expired_at: 2026-08-28
+
+  - id: CVE-2026-6276
+    statement: "curl/libcurl - Debian status affected as of 2026-07-29"
+    expired_at: 2026-08-28
+
+  - id: CVE-2026-7598
+    statement: "libssh2-1 - no fix available upstream as of 2026-07-29"
+    expired_at: 2026-08-28
+
+  - id: CVE-2026-8286
+    statement: "curl - Debian status fix_deferred as of 2026-07-29"
+    expired_at: 2026-08-28
+
+  - id: CVE-2026-8376
+    statement: "perl-base - no fix available upstream as of 2026-07-29"
+    expired_at: 2026-08-28
+
+  - id: CVE-2026-8927
+    statement: "curl - no fix available upstream as of 2026-07-29"
+    expired_at: 2026-08-28
+
+  - id: CVE-2026-8932
+    statement: "libcurl4 - no fix available upstream as of 2026-07-29"
+    expired_at: 2026-08-28
+
+  - id: CVE-2026-9538
+    statement: "perl-Archive-Tar - Debian status fix_deferred as of 2026-07-29"
+    expired_at: 2026-08-28

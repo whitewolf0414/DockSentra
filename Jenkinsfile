@@ -141,6 +141,7 @@ EOF
                     trivy image \
                         --exit-code 1 \
                         --severity CRITICAL,HIGH \
+                        --ignorefile .trivyignore.yaml \
                         --no-progress \
                         --format json \
                         --output reports/trivy-report.json \
@@ -149,10 +150,11 @@ EOF
                     # Also write a human-readable table for the log
                     trivy image \
                         --exit-code 0 \
+                        --ignorefile .trivyignore.yaml \
                         --no-progress \
                         ${IMAGE_NAME}:${IMAGE_TAG}
 
-                    echo "✔ Trivy scan passed (no CRITICAL/HIGH CVEs)"
+                    echo "✔ Trivy scan passed (no unacknowledged CRITICAL/HIGH CVEs)"
 EOF
                 '''
             }

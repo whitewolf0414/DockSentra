@@ -159,19 +159,12 @@ EOF
         }
 
         // ── Stage 6: Archive Reports ─────────────────────────────────────────
+        // Actual archiving now happens in the top-level post{always{}} block
+        // below, so reports survive even if an earlier stage (e.g. Container
+        // Scan / Trivy) fails and this stage gets skipped.
         stage('Archive Reports') {
             steps {
                 echo "Archiving security reports..."
-            }
-            post {
-                always {
-                    archiveArtifacts(
-                        artifacts: 'reports/**',
-                        allowEmptyArchive: true,
-                        fingerprint: true
-                    )
-                    echo "✔ Reports archived to Jenkins build artifacts"
-                }
             }
         }
     }
@@ -195,6 +188,16 @@ EOF
 """
         }
         always {
+            // Archive reports FIRST, before cleanWs() wipes the workspace.
+            // allowEmptyArchive keeps this safe even if a stage failed
+            // before generating every expected report file.
+            archiveArtifacts(
+                artifacts: 'reports/**',
+                allowEmptyArchive: true,
+                fingerprint: true
+            )
+            echo "✔ Reports archived to Jenkins build artifacts"
+
             // Clean up the built image to avoid disk pressure
             sh 'docker rmi ${IMAGE_NAME}:${IMAGE_TAG} || true'
             cleanWs()

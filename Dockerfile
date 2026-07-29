@@ -11,7 +11,6 @@
 #   ✓ missing_healthcheck   — HEALTHCHECK instruction present
 #   ✓ add_instead_of_copy   — uses COPY only, never ADD
 # ──────────────────────────────────────────────────────────────────────────────
-
 FROM python:3.11.9-slim
 
 # OCI image labels (no secrets)
@@ -20,17 +19,19 @@ LABEL org.opencontainers.image.description="CLI tool to scan Dockerfiles for sec
 LABEL org.opencontainers.image.version="1.0.0"
 LABEL org.opencontainers.image.source="https://github.com/example/dockerfile-security-checker"
 
-# Install OS-level dependencies without caching to keep image small
+# Install OS-level dependencies and pull latest security patches
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends curl \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+  && apt-get upgrade -y \
+  && apt-get install -y --no-install-recommends curl \
+  && apt-get clean \
+  && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
 # Copy and install Python dependencies first (layer caching)
 COPY requirements.txt /app/requirements.txt
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir --upgrade pip setuptools wheel \
+  && pip install --no-cache-dir -r requirements.txt
 
 # Copy only the application code and config (not tests or dev files)
 COPY app/      /app/app/
@@ -38,7 +39,7 @@ COPY config/   /app/config/
 
 # Create a non-root system user for running the scanner
 RUN groupadd -r scanner && useradd -r -g scanner -d /app -s /sbin/nologin scanner \
-    && chown -R scanner:scanner /app
+  && chown -R scanner:scanner /app
 
 # Drop privileges — satisfies no_root_user rule
 USER scanner
